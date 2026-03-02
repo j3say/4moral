@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>545631128057-t6oablo2kc65aiu23ikud98sqi161eki.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.545631128057-t6oablo2kc65aiu23ikud98sqi161eki</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>545631128057-5ev0okdctrvb60sakdhun91ggh18evli.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC-7SIkhCzFxsEBbncqn67LD7xVs3Fr-Hw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>545631128057</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.moral1.fourmoral</string>
+	<key>PROJECT_ID</key>
+	<string>moral-9f5c7</string>
+	<key>STORAGE_BUCKET</key>
+	<string>moral-9f5c7.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:545631128057:ios:276a9789c6685e136a9528</string>
+	<key>DATABASE_URL</key>
+	<string>https://moral-9f5c7-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
