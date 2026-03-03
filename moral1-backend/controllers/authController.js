@@ -1,61 +1,82 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// 1. Send OTP (Mock for now to avoid dependency on Client)
-exports.sendOtp = async (req, res) => {
+// Helper to generate JWT
+const signToken = (id, accountType) => {
+    return jwt.sign({ id, accountType }, process.env.JWT_SECRET, {
+        expiresIn: '3d'
+    });
+};
+
+// 1. Register User
+exports.register = async (req, res, next) => {
     try {
-        const { mobileNumber } = req.body;
-        if (!mobileNumber) return res.status(400).json({ error: "Mobile number is required" });
+        const { mobileNumber, password, name, accountType } = req.body;
 
-        // In production, integrate Twilio or MSG91 here.
-        // For now, we mock it. The OTP is 123456.
-        console.log(`Sending Mock OTP 123456 to ${mobileNumber}`);
+        // Check for existing user
+        const existingUser = await User.findOne({ mobileNumber });
+        if (existingUser) {
+            return res.status(400).json({ status: 'fail', message: 'Mobile number already in use' });
+        }
 
-        res.status(200).json({ message: "OTP sent successfully (Mock: 123456)" });
+        // Generate Custom Unique ID (e.g., MORAL_1709...)
+        const uniqueId = `MORAL_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
+        const newUser = await User.create({
+            mobileNumber,
+            password, // Will be hashed by pre('save')
+            uniqueId,
+            name,
+            accountType: accountType || 'Standard'
+        });
+
+        // Generate Token
+        const token = signToken(newUser._id, newUser.accountType);
+
+        // Remove password from output
+        newUser.password = undefined;
+
+        res.status(201).json({
+            status: 'success',
+            token,
+            data: { user: newUser }
+        });
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error); // Pass to global error handler
     }
 };
 
-// 2. Verify OTP & Login/Signup
-exports.verifyOtp = async (req, res) => {
+// 2. Login User
+exports.login = async (req, res, next) => {
     try {
-        const { mobileNumber, otp } = req.body;
+        const { mobileNumber, password } = req.body;
 
-        // Verify our Mock OTP
-        if (otp !== '123456') {
-            return res.status(400).json({ error: "Invalid OTP" });
+        // 1. Check if email and password exist
+        if (!mobileNumber || !password) {
+            return res.status(400).json({ status: 'fail', message: 'Please provide mobile number and password' });
         }
 
-        // Check if user exists
-        let user = await User.findOne({ mobileNumber });
-        let isNewUser = false;
+        // 2. Check if user exists && password is correct
+        // We must explicitly select '+password' because we set select: false in schema
+        const user = await User.findOne({ mobileNumber }).select('+password');
 
-        // If user doesn't exist, create a base standard account
-        if (!user) {
-            user = new User({
-                mobileNumber,
-                uniqueId: `MORAL1_${Date.now()}`, // Temporary unique ID
-                accountType: 'Standard', // Default type
-            });
-            await user.save();
-            isNewUser = true;
+        if (!user || !(await user.comparePassword(password))) {
+            return res.status(401).json({ status: 'fail', message: 'Incorrect mobile number or password' });
         }
 
-        // Generate JWT Token
-        const token = jwt.sign(
-            { userId: user._id, accountType: user.accountType },
-            process.env.JWT_SECRET,
-            { expiresIn: '30d' } // Token valid for 30 days
-        );
+        // 3. If everything ok, send token
+        const token = signToken(user._id, user.accountType);
+        
+        user.password = undefined; // Remove password from response
 
         res.status(200).json({
-            message: "Login successful",
+            status: 'success',
             token,
-            isNewUser,
-            user
+            data: { user }
         });
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 };
