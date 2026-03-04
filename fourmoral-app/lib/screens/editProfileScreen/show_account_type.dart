@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/constants/colors.dart';
 import 'package:fourmoral/screens/editProfileScreen/edit_profile_controller.dart';

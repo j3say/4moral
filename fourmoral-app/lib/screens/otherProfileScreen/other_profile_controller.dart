@@ -1,6 +1,7 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:fourmoral/models/story_model.dart';
 import 'package:fourmoral/models/user_profile_model.dart';
 import 'package:fourmoral/models/user_profile_post_model.dart';
