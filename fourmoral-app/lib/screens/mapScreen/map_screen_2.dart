@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -476,9 +477,10 @@ class _MapScreen3State extends State<MapScreen3> {
     } catch (e) {
       print('Error fetching photo URLs: $e');
       // For more detailed error info:
-      if (e is FirebaseException) {
-        print('Firestore error code: ${e.code}');
-        print('Firestore error message: ${e.message}');
+      if (e is Exception) {
+        // print('Firestore error code: ${e.code}');
+        // print('Firestore error message: ${e.message}');
+        print('Firestore error: $e');
       }
     }
   }

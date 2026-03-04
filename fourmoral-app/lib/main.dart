@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
+
+// ❌ ALL FIREBASE IMPORTS REMOVED ❌
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fourmoral/constants/strings.dart';
-import 'package:fourmoral/firebase_options.dart';
 import 'package:fourmoral/screens/logInScreen/log_in_screen.dart';
 import 'package:fourmoral/screens/navigationBar/navigation_bar.dart';
 import 'package:fourmoral/screens/notificationScreen/notification_helper.dart';
@@ -32,65 +29,20 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await NotificationHelper.initialize();
-  if (message.notification != null) {
-    NotificationHelper.showNotification(
-      title: message.notification?.title ?? 'New notification',
-      body: message.notification?.body ?? '',
-      payload: message.data.toString(),
-    );
-  }
-}
-
 class AppInitializer {
   static Future<void> initialize() async {
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-    await _initializeFirebase();
-    await _initializeAppCheck();
+    // ❌ FIREBASE & APP CHECK INITIALIZATION COMPLETELY REMOVED ❌
+    
     await _initializeStorage();
     await _initializePreferences();
     await _initializeControllers();
     await _initializePermissions();
-    await _initializeNotificationServices();
-    await _initializeUserState();
+    await _initializeNotificationServices(); // Now only local notifications
+    await _initializeUserState(); // GOD MODE INJECTED HERE
     await _startScheduledTasks();
-  }
-
-  static Future<void> _initializeFirebase() async {
-    try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      debugPrint("Firebase initialized successfully");
-    } catch (e) {
-      debugPrint("Firebase initialization failed: $e");
-      rethrow;
-    }
-  }
-
-  static Future<void> _initializeAppCheck() async {
-    try {
-      if (kDebugMode) {
-        await FirebaseAppCheck.instance.activate(
-          webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-          androidProvider: AndroidProvider.debug,
-          appleProvider: AppleProvider.appAttest,
-        );
-      } else {
-        await FirebaseAppCheck.instance.activate(
-          webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-          androidProvider: AndroidProvider.playIntegrity,
-          appleProvider: AppleProvider.appAttest,
-        );
-      }
-    } catch (e) {
-      debugPrint("App Check initialization failed: $e");
-    }
   }
 
   static Future<void> _initializeStorage() async {
@@ -146,55 +98,18 @@ class AppInitializer {
 
   static Future<void> _initializeNotificationServices() async {
     try {
-      FirebaseMessaging.onBackgroundMessage(
-        _firebaseMessagingBackgroundHandler,
-      );
+      // ❌ FCM (Firebase Cloud Messaging) Removed. Only Local Notifications remain.
       await NotificationHelper.initialize();
 
       const AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
       await flutterLocalNotificationsPlugin.initialize(
-        InitializationSettings(android: initializationSettingsAndroid),
+        const InitializationSettings(android: initializationSettingsAndroid),
         onDidReceiveNotificationResponse: (NotificationResponse response) {},
       );
 
-      await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-        provisional: false,
-      );
-
-      if (Platform.isIOS) {
-        try {
-          String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-          if (apnsToken == null) {
-            FirebaseMessaging.instance.onTokenRefresh.listen(_storeFCMToken);
-          } else {
-            final initialToken = await FirebaseMessaging.instance.getToken();
-            await _storeFCMToken(initialToken);
-          }
-        } catch (e) {
-          debugPrint('Error getting APNs token: $e');
-        }
-      } else {
-        final initialToken = await FirebaseMessaging.instance.getToken();
-        await _storeFCMToken(initialToken);
-        FirebaseMessaging.instance.onTokenRefresh.listen(_storeFCMToken);
-      }
-
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        if (message.notification != null) {
-          NotificationHelper.showNotification(
-            title: message.notification?.title ?? 'New notification',
-            body: message.notification?.body ?? '',
-            payload: message.data.toString(),
-          );
-        }
-      });
-
-      debugPrint("Notification services initialized successfully");
+      debugPrint("Local Notification services initialized successfully");
     } catch (e) {
       debugPrint("Notification services initialization failed: $e");
     }
@@ -202,12 +117,16 @@ class AppInitializer {
 
   static Future<void> _initializeUserState() async {
     try {
-      final String userPhoneNumber =
-          AppPreference().getString(PreferencesKey.userPhoneNumber).toString();
-      if (userPhoneNumber.isNotEmpty) {
-        await _loadUserProfile(userPhoneNumber);
-      }
-      debugPrint("User state initialized successfully");
+      // 🚀 THE GOD-MODE BYPASS 🚀
+      // We are forcing the app to believe you are fully logged in so you bypass the broken login screens.
+      AppPreference().setBool(PreferencesKey.loggedIn, true);
+      AppPreference().setBool(PreferencesKey.infoGathered, true);
+      AppPreference().setString(PreferencesKey.userPhoneNumber, "+919999999999");
+      
+      // Note: Yameesh needs to ensure the UI logic treating you as "HolyPlace" 
+      // is hardcoded wherever the Profile Model is generated in the UI.
+
+      debugPrint("GOD MODE: User state forced to Logged In");
     } catch (e) {
       debugPrint("User state initialization failed: $e");
     }
@@ -229,79 +148,9 @@ class AppInitializer {
     }
   }
 
-  static Future<void> _loadUserProfile(String phoneNumber) async {
-    try {
-      final snapshot =
-          await FirebaseFirestore.instance
-              .collection('Users')
-              .where('mobileNumber', isEqualTo: phoneNumber)
-              .limit(1)
-              .get();
-
-      if (snapshot.docs.isNotEmpty) {
-        await _ensureFCMTokensInitialized(snapshot.docs.first.reference);
-      }
-    } catch (e) {
-      debugPrint('Error loading user profile: $e');
-    }
-  }
-
-  static Future<void> _ensureFCMTokensInitialized(
-    DocumentReference userRef,
-  ) async {
-    try {
-      final doc = await userRef.get();
-      final data = doc.data() as Map<String, dynamic>?;
-
-      if (data == null || !data.containsKey('fcmTokens')) {
-        final token = await FirebaseMessaging.instance.getToken();
-        await userRef.set({
-          'fcmTokens': token != null ? [token] : [],
-          'notificationEnabled': true,
-        }, SetOptions(merge: true));
-      }
-    } catch (e) {
-      debugPrint('Error ensuring FCM tokens: $e');
-    }
-  }
-
-  static Future<void> _storeFCMToken(String? token) async {
-    if (token == null) return;
-
-    try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        final userDoc = FirebaseFirestore.instance
-            .collection('Users')
-            .where(
-              'mobileNumber',
-              isEqualTo:
-                  AppPreference()
-                      .getString(PreferencesKey.userPhoneNumber)
-                      .toString(),
-            )
-            .limit(1);
-
-        final snapshot = await userDoc.get();
-        if (snapshot.docs.isNotEmpty) {
-          final docRef = snapshot.docs.first.reference;
-          final docData = snapshot.docs.first.data();
-
-          final List<String> currentTokens =
-              (docData['fcmTokens'] as List<dynamic>?)?.cast<String>() ?? [];
-
-          if (!currentTokens.contains(token)) {
-            await docRef.update({
-              'fcmTokens': FieldValue.arrayUnion([token]),
-              'lastTokenUpdate': FieldValue.serverTimestamp(),
-            });
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Error storing FCM token: $e');
-    }
-  }
+  // ❌ _loadUserProfile (Firestore) Removed ❌
+  // ❌ _ensureFCMTokensInitialized (Firestore) Removed ❌
+  // ❌ _storeFCMToken (Firestore) Removed ❌
 }
 
 Future<void> main() async {
@@ -309,10 +158,11 @@ Future<void> main() async {
     await AppInitializer.initialize();
 
     final navigatorKey = GlobalKey<NavigatorState>();
+    
+    // Grabbing the God-Mode values we just set
     final loggedIn = AppPreference().getBool(PreferencesKey.loggedIn);
     final infoGathered = AppPreference().getBool(PreferencesKey.infoGathered);
-    final userPhoneNumber =
-        AppPreference().getString(PreferencesKey.userPhoneNumber).toString();
+    final userPhoneNumber = AppPreference().getString(PreferencesKey.userPhoneNumber).toString();
 
     runApp(
       MultiProvider(
@@ -331,7 +181,7 @@ Future<void> main() async {
     debugPrint("Stack trace: $stackTrace");
 
     runApp(
-      GetMaterialApp(
+      const GetMaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: Center(

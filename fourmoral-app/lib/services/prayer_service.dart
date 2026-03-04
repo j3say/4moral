@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +62,7 @@ class PrayerService {
     } catch (e) {
       print('Error updating notification status: $e');
       // Create document if it doesn't exist
-      if (e is FirebaseException && e.code == 'not-found') {
+      if (e is Exception) {
         await _firestore.collection('Users').doc(_userId).set({
           'notificationEnabled': enabled,
           'createdAt': FieldValue.serverTimestamp(),

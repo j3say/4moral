@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/screens/otherProfileScreen/other_profile_screen.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';

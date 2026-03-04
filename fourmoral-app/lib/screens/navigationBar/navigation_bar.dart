@@ -1,6 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fourmoral/utils/mock_firebase.dart'
+;import 'package:flutter/material.dart';
 import 'package:fourmoral/models/user_profile_model.dart';
 import 'package:fourmoral/screens/postStoryProductUpload/add_post_story_product_screen.dart';
 import 'package:fourmoral/screens/product/shop_page.dart';

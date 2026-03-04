@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:fourmoral/models/post_model.dart';
 import 'package:fourmoral/models/user_profile_model.dart';
 import 'package:fourmoral/screens/postStoryProductUpload/controller/edit_post_controller.dart';

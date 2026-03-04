@@ -1,5 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/screens/explorePageScreen/explore_controller.dart';
@@ -82,7 +84,7 @@ class AuthService {
         }
       }
     }
-    FirebaseAuth.instance.signOut();
+    // FirebaseAuth.instance.signOut();
     Get.offAll(() => const LoginScreen());
 
     await AppPreference().setBool(PreferencesKey.loggedIn, false);

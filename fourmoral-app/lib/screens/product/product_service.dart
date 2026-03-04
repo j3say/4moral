@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/models/product_model.dart';
@@ -232,13 +233,13 @@ class ProductService {
     return _firestore
         .collection(_collectionName)
         .doc(productId)
-        .snapshots()
-        .map(
-          (doc) =>
-              doc.exists
-                  ? Product.fromMap(id: doc.id, data: doc.data()!)
-                  : null,
-        );
+        // .snapshots()
+        // .map(
+        //   (doc) =>
+        //       doc.exists
+        //           ? Product.fromMap(id: doc.id, data: doc.data()!)
+        //           : null,
+        // );
   }
 
   Stream<List<Product>> getFilteredProductsStream({
@@ -248,7 +249,8 @@ class ProductService {
     String? category,
     int? limit,
   }) {
-    Query query = _firestore.collection(_collectionName);
+    // Query query = _firestore.collection(_collectionName);
+    dynamic query = _firestore.collection(_collectionName);
 
     if (minPrice != null) {
       query = query.where('price', isGreaterThanOrEqualTo: minPrice);

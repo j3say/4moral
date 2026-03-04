@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:fourmoral/models/product_model.dart';
 import 'package:fourmoral/screens/product/media_slider.dart';
 import 'package:fourmoral/screens/product/product_edit.dart';

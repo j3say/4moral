@@ -3,9 +3,11 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:math' show pow;
 import 'package:audio_session/audio_session.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:fourmoral/models/group_user.dart';
@@ -848,7 +850,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         );
       }
     } on PlatformException catch (e) {
-      _showSnackBar('File picker error: ${e.message}');
+      _showSnackBar('File picker error: ${e}');
     } catch (e) {
       _showSnackBar('Failed to pick file: ${e.toString()}');
     }
@@ -2074,8 +2076,9 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         (event) {},
         onError: (Object e, StackTrace st) {
           if (e is PlayerException) {
-            debugPrint('Error code: ${e.code}');
-            debugPrint('Error message: ${e.message}');
+            // debugPrint('Error code: ${e.code}');
+            // debugPrint('Error message: ${e.message}');
+            debugPrint('Firestore error: $e');
           } else {
             debugPrint('An error occurred: $e');
           }
@@ -2474,15 +2477,15 @@ class _FileDisplayWidgetState extends State<FileDisplayWidget> {
           _showSnackBar('File saved but could not open: ${openResult.message}');
         }
       }
-    } on FirebaseException catch (e) {
+    } on Exception catch (e) {
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
-        _showSnackBar('Firebase error: ${e.message}');
+        _showSnackBar('Error: ${e}');
       }
     } on PlatformException catch (e) {
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
-        _showSnackBar('System error: ${e.message}');
+        _showSnackBar('System error: ${e}');
       }
     } catch (e) {
       if (mounted) {

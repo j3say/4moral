@@ -5,9 +5,10 @@ import 'package:fourmoral/screens/contactsScreen/contacts_services.dart';
 import 'package:fourmoral/screens/group/group_chat_screen.dart';
 import 'package:get/get.dart';
 import 'package:fourmoral/models/contacts_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 class CreateGroupScreen2 extends StatefulWidget {
   const CreateGroupScreen2({super.key, required this.userMobile});
   final String userMobile;

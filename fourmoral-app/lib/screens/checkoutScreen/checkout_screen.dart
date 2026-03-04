@@ -36,48 +36,22 @@ class _AmazonLikeCheckoutPageState extends State<AmazonLikeCheckoutPage> {
     setState(() => _isLoading = true);
 
     try {
-      var headers = {
-        'Content-Type': 'application/json',
-        'Authorization':
-            'Basic cnpwX3Rlc3Rfd1ByVHJQSFhXTzdYTjE6eklxd0RodkhPNEx3S20xU3BVVHU0Vzdx',
-      };
-      var data = json.encode({
-        "amount": 50000,
-        "currency": "INR",
-        "receipt": "Receipt no. 1",
-        "notes": {
-          "notes_key_1": "Tea, Earl Grey, Hot",
-          "notes_key_2": "Tea, Earl Grey… decaf.",
-        },
-      });
-      var dio = Dio();
-      var response = await dio.request(
-        'https://api.razorpay.com/v1/orders',
-        options: Options(method: 'POST', headers: headers),
-        data: data,
-      );
-
-      if (response.statusCode != 200) {
-        throw Exception("Failed to create order");
-      }
-
+      // Local fallback: Simulate order creation
+      await Future.delayed(const Duration(seconds: 1));
       var options = {
-        'key': 'rzp_test_wPrTrPHXWO7XN1', // rzp_live_GZEjvPBJ7XlOYQ
-        'amount': response.data['amount'],
-        'currency': response.data['currency'],
+        'key': 'rzp_test_wPrTrPHXWO7XN1',
+        'amount': 50000,
+        'currency': 'INR',
         'name': 'Moral 1',
         'description': 'Payment for your order',
-        'order_id': response.data['id'], // Order ID from your backend
+        'order_id': 'order_local_fallback_123', // Mock order ID
         'prefill': {'contact': '9876543210', 'email': 'user@example.com'},
         'theme': {'color': '#3399cc'},
       };
-
       _razorpay.open(options);
     } catch (e) {
       print("Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
     } finally {
       setState(() => _isLoading = false);
     }

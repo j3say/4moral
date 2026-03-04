@@ -5,7 +5,8 @@ import 'package:fourmoral/screens/story/story2_modal.dart';
 import 'package:fourmoral/screens/story/story_create_page.dart';
 import 'package:fourmoral/screens/story/story_view_page.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 
 class StoryListPage extends StatefulWidget {
   final ProfileModel? profileModel;
