@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/models/user_profile_model.dart';
 import 'package:fourmoral/screens/story/story2_controller.dart';
@@ -166,8 +167,8 @@ class _StoryCreatePageState extends State<StoryCreatePage> {
         final searchSnapshot =
             await _hashtagsRef
                 .orderByKey()
-                .startAt(query)
-                .endAt('$query\uf8ff')
+                // .startAt(query)
+                // .endAt('$query\uf8ff')
                 .limitToFirst(5)
                 .get();
 

@@ -1,5 +1,6 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fourmoral/screens/homePageScreen/home_controller.dart';
 import 'package:get/get.dart';

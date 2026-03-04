@@ -1,4 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/models/user_profile_model.dart';
 import 'package:fourmoral/screens/groupInformationScreen/group_information_screen.dart';

@@ -10,7 +10,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:video_player/video_player.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fourmoral/widgets/flutter_toast.dart';

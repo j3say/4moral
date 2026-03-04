@@ -6,7 +6,8 @@ import 'package:audioplayers/audioplayers.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:fourmoral/utils/message_utils.dart';
 import 'package:get/get.dart';
@@ -274,7 +275,7 @@ class MessageCnt extends GetxController {
     // Step 3: Construct message object
     final Map<String, dynamic> messageData = {
       "message": encrypted,
-      "id": messageRef?.key ?? "",
+      "id": "",
       "sender": userphone,
       "receiver": profileuserphone,
       "type": type ?? "text",
