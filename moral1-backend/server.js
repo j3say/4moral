@@ -5,44 +5,32 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const authController = require('./controllers/authController');
-const { protect } = require('./middleware/checkAuth');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const metaRoutes = require('./routes/metaRoutes');
 const globalErrorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// --- 1. Global Middleware ---
-app.use(helmet()); // Security headers
-app.use(cors()); // Allow cross-origin requests (for Flutter)
-app.use(morgan('dev')); // Logging
-app.use(express.json()); // Body parser
+// Middleware
+app.use(helmet());
+app.use(cors());
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// --- 2. Routes ---
-app.post('/api/auth/register', authController.register);
-app.post('/api/auth/login', authController.login);
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/meta', metaRoutes);
 
-// Example Protected Route
-app.get('/api/users/profile', protect, (req, res) => {
-    res.status(200).json({
-        status: 'success',
-        data: { user: req.user }
-    });
-});
-
-// --- 3. Error Handling ---
+// Global Error Handler
 app.use(globalErrorHandler);
 
-// --- 4. Database & Server Start ---
-const PORT = process.env.PORT || 3000;
-const DB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/fourmoral_db';
+// DB & Server
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB Connected'))
+  .catch(err => console.error('❌ DB Error:', err));
 
-mongoose.connect(DB_URI)
-    .then(() => {
-        console.log('✅ MongoDB Connected Successfully');
-        app.listen(PORT, () => {
-            console.log(`🚀 Server running on port ${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.error('❌ DB Connection Error:', err);
-    });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
