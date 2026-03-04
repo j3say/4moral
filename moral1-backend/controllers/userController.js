@@ -9,23 +9,23 @@ exports.checkUsername = async (req, res, next) => {
 };
 
 exports.updateProfile = async (req, res, next) => {
-  try {
-    // req.file contains the uploaded image (via multer)
-    // req.body contains text fields
-    const updates = { ...req.body };
-    
-    // If image uploaded, save path (In prod, upload to S3 here and save URL)
-    if (req.file) {
-      updates.profilePicture = req.file.path; // Or S3 URL
+    try {
+        const updates = { ...req.body };
+        
+        // If an image was uploaded, save the live Cloudinary URL
+        if (req.file) {
+            updates.profilePicture = req.file.path; // This is now a secure https://res.cloudinary.com/... URL
+        }
+
+        updates.profileCompleted = true;
+
+        const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
+            new: true,
+            runValidators: true
+        });
+
+        res.status(200).json({ status: 'success', user: updatedUser });
+    } catch (err) { 
+        next(err); 
     }
-
-    updates.profileCompleted = true; // Critical flag update
-
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, {
-      new: true,
-      runValidators: true
-    });
-
-    res.status(200).json({ status: 'success', user: updatedUser });
-  } catch (err) { next(err); }
 };
