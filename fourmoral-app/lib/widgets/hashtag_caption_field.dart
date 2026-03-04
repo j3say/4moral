@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'dart:math';
 import 'dart:async';
 
@@ -155,8 +156,8 @@ class _HashtagCaptionFieldState extends State<HashtagCaptionField> {
           final snapshot =
               await _hashtagsRef
                   .orderByKey()
-                  .startAt(query)
-                  .endAt('$query\uf8ff') // Firebase key for range queries
+                  // .startAt(query)
+                  // .endAt('$query\uf8ff') // Firebase key for range queries
                   .limitToFirst(10)
                   .get();
 
@@ -223,8 +224,8 @@ class _HashtagCaptionFieldState extends State<HashtagCaptionField> {
           final snapshot =
               await _usersRef
                   .orderByChild('username')
-                  .startAt(query)
-                  .endAt('$query\uf8ff')
+                  // .startAt(query)
+                  // .endAt('$query\uf8ff')
                   .limitToFirst(10)
                   .get();
 

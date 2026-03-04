@@ -2,7 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:fourmoral/utils/mock_firebase.dart';
+// import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 // Enum for upload status
 enum UploadStatus { uploading, failed, completed }
@@ -16,7 +17,8 @@ class UploadTaskModel {
   double progress;
   DateTime startTime;
   bool isCanceled;
-  firebase_storage.UploadTask? firebaseUploadTask;
+  // firebase_storage.
+  UploadTask? firebaseUploadTask;
 
   UploadTaskModel({
     required this.id,
@@ -67,14 +69,14 @@ class UploadManager extends ChangeNotifier {
     );
     _addTask(taskModel);
 
-    final ref = firebase_storage.FirebaseStorage.instance.ref().child(
+    final ref = FirebaseStorage.instance.ref().child(
       storagePath,
     );
     final uploadTask = ref.putFile(file);
     taskModel.firebaseUploadTask = uploadTask;
 
     uploadTask.snapshotEvents.listen(
-      (firebase_storage.TaskSnapshot snapshot) {
+      (TaskSnapshot snapshot) {
         if (taskModel.isCanceled) {
           uploadTask.cancel();
           return;
@@ -86,12 +88,12 @@ class UploadManager extends ChangeNotifier {
         taskModel.progress = prog;
         notifyListeners();
 
-        if (snapshot.state == firebase_storage.TaskState.success) {
+        if (snapshot.state == TaskState.success) {
           taskModel.status = UploadStatus.completed;
           taskModel.progress = 1.0;
           notifyListeners();
-        } else if (snapshot.state == firebase_storage.TaskState.error ||
-            snapshot.state == firebase_storage.TaskState.canceled) {
+        } else if (snapshot.state == TaskState.error ||
+            snapshot.state == TaskState.canceled) {
           taskModel.status = UploadStatus.failed;
           notifyListeners();
         }

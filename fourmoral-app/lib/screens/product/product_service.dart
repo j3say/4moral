@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fourmoral/models/product_model.dart';
 import 'dart:io';
@@ -230,16 +230,7 @@ class ProductService {
   }
 
   Stream<Product?> getProductStream(String productId) {
-    return _firestore
-        .collection(_collectionName)
-        .doc(productId)
-        // .snapshots()
-        // .map(
-        //   (doc) =>
-        //       doc.exists
-        //           ? Product.fromMap(id: doc.id, data: doc.data()!)
-        //           : null,
-        // );
+    return const Stream.empty();
   }
 
   Stream<List<Product>> getFilteredProductsStream({
