@@ -2,60 +2,50 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    // --- Basic Details ---
-    mobileNumber: { type: String, required: true, unique: true, index: true },
-    uniqueId: { type: String, required: true, unique: true, index: true }, // System 2 Public ID
-    username: { type: String, trim: true }, 
-    name: { type: String, trim: true },
-    
-    // --- Auth & Security ---
-    password: { 
-        type: String, 
-        required: [true, 'Password is required'], 
-        select: false // Prevents password from returning in queries by default
-    }, 
-    
-    // --- Set 1 Logic: Account Types ---
-    accountType: { 
-        type: String, 
-        enum: ['Standard', 'Mentor', 'NGO', 'HolyPlace', 'Business', 'Media'], 
-        default: 'Standard' 
-    },
-    category: { 
-        type: Number, 
-        enum: [1, 2, 3, 4], 
-        default: 1 // 1: Fully Private, 4: Public/Searchable
-    },
-    
-    // --- Dual Connection System ---
-    // System 1: Contact-to-Contact (Private/Mutual)
-    systemOneContacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    
-    // System 2: Account Following (Public/Feed)
-    systemTwoFollowers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    systemTwoFollowing: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    
-    // --- Privacy Flags ---
-    isVerified: { type: Boolean, default: false },
-    isPrivateAccount: { type: Boolean, default: true },
-    
+  mobileNumber: { type: String, required: true, unique: true },
+  password: { type: String, required: true, select: false },
+  
+  // Profile Data
+  username: { type: String, unique: true, sparse: true, trim: true },
+  name: { type: String, default: '' },
+  bio: { type: String, default: '' },
+  age: { type: String, default: '' }, // String to match controller logic
+  gender: { type: String, enum: ['Male', 'Female', 'Other', ''], default: '' },
+  address: { type: String, default: '' },
+  emailAddress: { type: String, default: '' },
+  religion: { type: String, default: '' },
+  community: { type: String, default: '' },
+  profilePicture: { type: String, default: '' },
+
+  // System Flags
+  profileCompleted: { type: Boolean, default: false }, // Maps to infoGathered
+  accountType: { 
+    type: String, 
+    enum: ['Standard', 'Mentor', 'NGO', 'HolyPlace', 'Business', 'Media'], 
+    default: 'Standard' 
+  },
+  category: { type: String, default: '' },
+  
+  // Auth & Notifications
+  fcmTokens: [{ type: String }],
+  lastLogin: { type: Date, default: Date.now },
+
 }, { timestamps: true });
 
-// --- Middleware: Hash Password before Saving ---
+// Hash password
 userSchema.pre('save', async function() {
-    // 2. If password is not modified, just return (resolves the promise)
+    // 1. If password is not modified, simply return (ends the function)
     if (!this.isModified('password')) return;
-    
-    // 3. Hash the password
+
+    // 2. Hash the password
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
     
-    // 4. No need to call next(); the async function resolving signals "done"
+    // 3. Do NOT call next(). The async function finishing signals "success".
 });
-
-// --- Method: Compare Password ---
+// Compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema);
