@@ -1,6 +1,7 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
+import 'package:fourmoral/utils/mock_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fourmoral/models/contacts_model.dart';
