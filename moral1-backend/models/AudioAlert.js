@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const audioAlertSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    holyPlaceId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true }, // Permanent metadata
     audioUrl: { type: String, required: true }, // Cloudinary/S3 link
     
