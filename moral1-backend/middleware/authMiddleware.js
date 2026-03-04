@@ -29,3 +29,4 @@ exports.restrictTo = (...allowedRoles) => {
         }
         next();
     };
+};
