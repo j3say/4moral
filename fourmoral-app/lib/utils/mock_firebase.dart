@@ -113,3 +113,106 @@ class Timestamp {
   DateTime toDate() => DateTime.now();
   static Timestamp fromDate(DateTime date) => Timestamp();
 }
+
+class FirebaseDatabase {
+  static final instance = FirebaseDatabase();
+  DatabaseReference ref([String? path]) => DatabaseReference(); 
+}
+
+class DatabaseReference {
+  DatabaseReference child(String path) => this;
+  
+  // 🚀 FIXED: Added the missing properties the compiler is crying about
+  String get key => "fake_key_123";
+  DatabaseReference get ref => this;
+  
+  DatabaseReference push() => this;
+  DatabaseReference orderByChild(String path) => this;
+  DatabaseReference orderByKey() => this;
+  DatabaseReference limitToLast(int count) => this;
+  DatabaseReference limitToFirst(int count) => this; // 🚀 FIXED: Added limitToFirst
+  
+  Future<DataSnapshot> get() async => DataSnapshot();
+  Future<DatabaseEvent> once() async => DatabaseEvent();
+  Future<void> update(Map<String, dynamic> data) async {} 
+  Future<void> set(dynamic data) async {} 
+  
+  Stream<DatabaseEvent> get onValue => const Stream.empty();
+}
+
+class DataSnapshot {
+  dynamic get value => null;
+  bool get exists => false; // Fixed: Added exists check
+}
+
+class DatabaseEvent {
+  DataSnapshot get snapshot => DataSnapshot();
+}
+
+// Fixed: Added ServerValue for EditPostController
+class ServerValue {
+  static const Map<String, String> timestamp = {'.sv': 'timestamp'};
+}
+
+
+// --- FAKE FIREBASE STORAGE ---
+class FirebaseStorage {
+  static final instance = FirebaseStorage();
+  static FirebaseStorage instanceFor({required String bucket}) => instance; 
+  MockStorageReference ref([String? path]) => MockStorageReference();
+  MockStorageReference refFromURL(String url) => MockStorageReference();
+}
+
+class MockStorageReference {
+  MockStorageReference child(String path) => this;
+  
+  // 🚀 FIXED: Now returns an awaitable UploadTask
+  UploadTask putFile(dynamic file, [dynamic metadata]) => UploadTask();
+  UploadTask putData(dynamic data, [dynamic metadata]) => UploadTask();
+  
+  Future<String> getDownloadURL() async => "https://via.placeholder.com/150"; 
+  Future<void> delete() async {}
+  Future<dynamic> getMetadata() async => null;
+  Future<dynamic> getData() async => null; 
+  
+  UploadTask writeToFile(dynamic file) => UploadTask();
+}
+
+class TaskSnapshot {
+  MockStorageReference get ref => MockStorageReference();
+  TaskState get state => TaskState.success;
+  int get bytesTransferred => 100;
+  int get totalBytes => 100;
+}
+
+enum TaskState { success, error, canceled, running, paused }
+
+typedef Reference = MockStorageReference;
+
+class SettableMetadata {
+  final String? contentType;
+  final Map<String, String>? customMetadata;
+  final String? cacheControl;
+  SettableMetadata({this.contentType, this.customMetadata, this.cacheControl});
+}
+
+class UploadTask implements Future<TaskSnapshot> {
+   final Future<TaskSnapshot> _delegate = Future.value(TaskSnapshot());
+   @override
+   Stream<TaskSnapshot> asStream() => _delegate.asStream();
+   @override
+   Future<TaskSnapshot> catchError(Function onError, {bool Function(Object)? test}) => _delegate.catchError(onError, test: test);
+   @override
+   Future<R> then<R>(FutureOr<R> Function(TaskSnapshot) onValue, {Function? onError}) => _delegate.then(onValue, onError: onError);
+   @override
+   Future<TaskSnapshot> timeout(Duration timeLimit, {FutureOr<TaskSnapshot> Function()? onTimeout}) => _delegate.timeout(timeLimit, onTimeout: onTimeout);
+   @override
+   Future<TaskSnapshot> whenComplete(FutureOr<void> Function() action) => _delegate.whenComplete(action);
+
+   Stream<TaskSnapshot> get snapshotEvents => const Stream.empty();
+   TaskSnapshot get snapshot => TaskSnapshot();
+   MockStorageReference get ref => MockStorageReference();
+
+   // 🚀 FIXED: Added the cancel method the upload bar is looking for!
+   Future<bool> cancel() async => true; 
+}
