@@ -30,9 +30,27 @@ app.use('/api/announcements', announcementRoutes);
 app.use(globalErrorHandler);
 
 // DB & Server
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => console.error('❌ DB Error:', err));
+const LOCAL_MONGO_URI = 'mongodb://localhost:27017/moral1';
+const REMOTE_MONGO_URI = process.env.MONGO_URI;
+
+async function connectWithFallback() {
+  try {
+    // Try remote (Atlas) first
+    await mongoose.connect(REMOTE_MONGO_URI, { serverSelectionTimeoutMS: 1000 });
+    console.log('✅ MongoDB Atlas Connected');
+  } catch (err) {
+    console.error('❌ Atlas DB Error:', err);
+    try {
+      // Fallback to local
+      await mongoose.connect(LOCAL_MONGO_URI);
+      console.log('✅ Local MongoDB Connected');
+    } catch (localErr) {
+      console.error('❌ Local DB Error:', localErr);
+    }
+  }
+}
+
+connectWithFallback();
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
