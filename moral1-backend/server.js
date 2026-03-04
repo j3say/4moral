@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const metaRoutes = require('./routes/metaRoutes');
 const globalErrorHandler = require('./middleware/errorHandler');
+const announcementRoutes = require('./routes/announcementRoutes');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/meta', metaRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 // Global Error Handler
 app.use(globalErrorHandler);
