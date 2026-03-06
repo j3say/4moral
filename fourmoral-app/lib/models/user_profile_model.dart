@@ -47,7 +47,30 @@ class ProfileModel {
     this.contactAccount,
   );
 
-  get value => null;
+  factory ProfileModel.fromMap(Map<String, dynamic> map) {
+    return ProfileModel(
+      map['mobileNumber'] ?? '',
+      map['profilePicture'] ?? '',
+      map['username'] ?? '',
+      map['accountType'] ?? map['type'] ?? 'Standard', 
+      map['bio'] ?? '',
+      map['uniqueId'] ?? '',
+      map['name'] ?? '',
+      map['age']?.toString() ?? '',
+      map['gender'] ?? '',
+      map['address'] ?? '',
+      map['emailAddress'] ?? '',
+      map['religion'] ?? '',
+      '', '', '', '', '', 
+      map['isVerified'] ?? false,
+      map['isPrivateAccount'] ?? false,
+      map['recording'] ?? [],
+      map['_id'] ?? '',
+      map['contactOnlyMode'] ?? false,
+    );
+  }
+
+  String get accountType => type;
 }
 
 ProfileModel? profileDataModel;
