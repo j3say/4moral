@@ -14,7 +14,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'moral1_announcements',
-    resource_type: 'video', // Required for audio files in Cloudinary
+    resource_type: 'auto', // Required for audio files in Cloudinary
     format: async (req, file) => 'mp3', 
   },
 });

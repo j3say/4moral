@@ -1,14 +1,15 @@
+// routes/announcementRoutes.js
 const express = require('express');
 const router = express.Router();
 const announcementController = require('../controllers/announcementController');
-const { authenticate } = require('../middleware/auth'); 
-// IMPORT THE CLOUDINARY WRAPPER HERE!
+const { protect } = require('../middleware/authMiddleware');
 const { upload } = require('../utils/storageWrapper'); 
 
-// POST /api/announcements (Fixed function name to postAnnouncement)
-router.post('/', authenticate, upload.single('audio'), announcementController.postAnnouncement);
+// POST /api/announcements
+// Note: using 'protect' now
+router.post('/', protect, upload.single('audio'), announcementController.postAnnouncement);
 
 // GET /api/announcements
-router.get('/', authenticate, announcementController.getAnnouncements);
+router.get('/', protect, announcementController.getAnnouncements);
 
 module.exports = router;

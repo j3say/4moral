@@ -11,8 +11,8 @@ exports.postAnnouncement = async (req, res) => {
 
     const announcement = new Announcement({
       title,
-      audioUrl: req.file.path, // Cloudinary URL
-      userId: req.user.userId,
+      audioUrl: req.file.path,
+      userId: req.user._id,
       broadcastTargets: broadcastTargets ? JSON.parse(broadcastTargets) : [],
       expiresAt
     });
