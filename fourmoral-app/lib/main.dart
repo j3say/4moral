@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 // ❌ ALL FIREBASE IMPORTS REMOVED ❌
 
 import 'package:flutter/foundation.dart';
@@ -8,12 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fourmoral/constants/strings.dart';
+import 'package:fourmoral/models/user_profile_model.dart';
 import 'package:fourmoral/screens/logInScreen/log_in_screen.dart';
 import 'package:fourmoral/screens/navigationBar/navigation_bar.dart';
 import 'package:fourmoral/screens/notificationScreen/notification_helper.dart';
 import 'package:fourmoral/screens/product/recent_category_service.dart';
 import 'package:fourmoral/screens/story/story2_controller.dart';
 import 'package:fourmoral/services/announcement_service.dart';
+import 'package:fourmoral/services/api_service.dart';
 import 'package:fourmoral/services/preferences/preference_manager.dart';
 import 'package:fourmoral/services/preferences/preferences_key.dart';
 import 'package:fourmoral/widgets/upload_bar.dart';
@@ -24,10 +25,15 @@ import 'package:provider/provider.dart';
 import 'screens/infoGatheringScreen/info_gathering_screen.dart';
 import 'services/scroll_behaviour.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:fourmoral/models/user_profile_model.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // Global instances
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+  
+// Global instance for Profile Data
+ProfileModel? globalProfile;
 
 class AppInitializer {
   static Future<void> initialize() async {
@@ -41,8 +47,31 @@ class AppInitializer {
     await _initializeControllers();
     await _initializePermissions();
     await _initializeNotificationServices(); // Now only local notifications
-    await _initializeUserState(); // GOD MODE INJECTED HERE
+    // await _initializeUserState(); // GOD MODE INJECTED HERE
+    await initUserSession();
     await _startScheduledTasks();
+  }
+
+  static Future<void> initUserSession() async {
+    final storage = GetStorage();
+    final apiService = ApiService();
+    String? token = storage.read('jwt_token');
+
+    if (token != null) {
+      try {
+        debugPrint("Identity Hydration: Fetching profile from MongoDB...");
+        final userData = await apiService.getMe();
+        
+        // 2.2: Populate global profileDataModel
+        // Assuming your model has a fromMap/fromJson factory
+        globalProfile = ProfileModel.fromMap(userData); 
+        
+        debugPrint("Session Active: Role is ${globalProfile?.type}");
+      } catch (e) {
+        debugPrint("Hydration Failed: $e");
+        storage.remove('jwt_token');
+      }
+    }
   }
 
   static Future<void> _initializeStorage() async {
@@ -75,6 +104,11 @@ class AppInitializer {
 
   static Future<void> _initializePermissions() async {
     try {
+      if (kIsWeb) {
+        debugPrint("Web detected: Skipping mobile permission checks.");
+        return;
+      }
+
       final permissions = [
         Permission.camera,
         Permission.storage,
@@ -156,22 +190,21 @@ class AppInitializer {
 Future<void> main() async {
   try {
     await AppInitializer.initialize();
-
     final navigatorKey = GlobalKey<NavigatorState>();
     
     // Grabbing the God-Mode values we just set
-    final loggedIn = AppPreference().getBool(PreferencesKey.loggedIn);
-    final infoGathered = AppPreference().getBool(PreferencesKey.infoGathered);
-    final userPhoneNumber = AppPreference().getString(PreferencesKey.userPhoneNumber).toString();
+    // final loggedIn = AppPreference().getBool(PreferencesKey.loggedIn);
+    // final infoGathered = AppPreference().getBool(PreferencesKey.infoGathered);
+    // final userPhoneNumber = AppPreference().getString(PreferencesKey.userPhoneNumber).toString();
 
     runApp(
       MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => UploadManager())],
         child: MyApp(
-          navigatorKey: navigatorKey,
-          loggedIn: loggedIn,
-          infoGathered: infoGathered,
-          userPhoneNumber: userPhoneNumber,
+          navigatorKey: navigatorKey
+          // loggedIn: loggedIn,
+          // infoGathered: infoGathered,
+          // userPhoneNumber: userPhoneNumber,
         ),
       ),
     );
@@ -196,16 +229,16 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final bool loggedIn;
-  final bool infoGathered;
-  final String userPhoneNumber;
+  // final bool loggedIn;
+  // final bool infoGathered;
+  // final String userPhoneNumber;
   final GlobalKey<NavigatorState>? navigatorKey;
 
   const MyApp({
     super.key,
-    required this.loggedIn,
-    required this.infoGathered,
-    required this.userPhoneNumber,
+    // required this.loggedIn,
+    // required this.infoGathered,
+    // required this.userPhoneNumber,
     this.navigatorKey,
   });
 
@@ -223,6 +256,11 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       navigatorKey: navigatorKey,
+      initialRoute: "/", 
+      getPages: [
+        GetPage(name: "/", page: () => _getHomeScreen()),
+        GetPage(name: "/login", page: () => const LoginScreen()),
+      ],
       builder: (BuildContext context, Widget? child) {
         return SafeArea(
           bottom: true,
@@ -254,14 +292,13 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _getHomeScreen() {
-    if (!loggedIn) {
-      return const LoginScreen();
-    }
-
-    if (infoGathered) {
-      return NavigationBarCustom(userPhoneNumber: userPhoneNumber);
-    }
-
-    return InfoGatheringScreen(userPhoneNumber: userPhoneNumber);
+    final storage = GetStorage();
+    String? token = storage.read('jwt_token');
+    if (token == null) return const LoginScreen();
+    if (globalProfile != null) {
+      return NavigationBarCustom(userPhoneNumber: globalProfile?.mobileNumber ?? "");
+  }
+    String savedPhone = storage.read('userPhoneNumber') ?? "";
+    return InfoGatheringScreen(userPhoneNumber: savedPhone);
   }
 }

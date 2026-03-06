@@ -76,7 +76,7 @@ class _HomePageScreenState extends State<HomePageScreen>
   init() async {
     await homeCnt.getProfileData(userPhoneNumber: widget.userPhoneNumber);
     await homeCnt.getPostAndStoryData();
-    await homeCnt.getUsersList();
+    // await homeCnt.getUsersList();
     await story2Controller.initializeAndFetch();
   }
 

@@ -1,4 +1,5 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fourmoral/main.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fourmoral/utils/mock_firebase.dart';
@@ -22,15 +23,21 @@ import '../models/user_profile_story_model.dart';
 import '../screens/infoGatheringScreen/info_gathering_screen.dart';
 import '../screens/navigationBar/navigation_bar.dart';
 import '../widgets/flutter_toast.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthService {
   final homeCnt = Get.put(HomeCnt());
   final exploreCnt = Get.put(ExploreCnt());
   final profileCnt = Get.put(ProfileController());
+  final _storage = GetStorage();
 
   signOut(BuildContext context) async {
     homeCnt.profileDataFetched.value = false;
     profileDataModel = null;
+    globalProfile = null;
+
     homeCnt.contactsDataFetched.value = false;
     notificationFetched = false;
     notificationList.clear();
@@ -84,12 +91,43 @@ class AuthService {
         }
       }
     }
+
+    if (!kIsWeb) {
+      final phone = AppPreference().getString(PreferencesKey.userPhoneNumber);
+      if (phone.isNotEmpty) {
+        try {
+          final token = await FirebaseMessaging.instance.getToken();
+          if (token != null) {
+            // Firestore logic for mobile only
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .where('mobileNumber', isEqualTo: phone)
+                .limit(1)
+                .get()
+                .then((userDoc) async {
+                  if (userDoc.docs.isNotEmpty) {
+                    await userDoc.docs.first.reference.update({
+                      'fcmTokens': FieldValue.arrayRemove([token]),
+                    });
+                  }
+                });
+          }
+        } catch (e) {
+          debugPrint("FCM cleanup skipped: $e");
+        }
+      }
+    }
+
+    _storage.remove('jwt_token'); 
+    await AppPreference().setBool(PreferencesKey.loggedIn, false);
+    await AppPreference().setString(PreferencesKey.userPhoneNumber, '');
+
     // FirebaseAuth.instance.signOut();
     Get.offAll(() => const LoginScreen());
 
-    await AppPreference().setBool(PreferencesKey.loggedIn, false);
-    await AppPreference().setBool(PreferencesKey.infoGathered, false);
-    await AppPreference().setString(PreferencesKey.userPhoneNumber, '');
+    // await AppPreference().setBool(PreferencesKey.loggedIn, false);
+    // await AppPreference().setBool(PreferencesKey.infoGathered, false);
+    // await AppPreference().setString(PreferencesKey.userPhoneNumber, '');
     flutterShowToast('Signed Out Successfully');
   }
 
