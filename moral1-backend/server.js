@@ -20,6 +20,11 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(cors({
+  origin: 'http://localhost:53801', // Match your Flutter web port
+  credentials: true
+}));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
