@@ -42,8 +42,7 @@ exports.login = async (req, res, next) => {
 
     const user = await User.findOne({ mobileNumber }).select('+password');
     
-    if (!user) {
-      console.log("❌ User NOT found in DB for number:", mobileNumber);
+    if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ status: 'fail', message: 'Invalid credentials' });
     }
 
@@ -53,6 +52,11 @@ exports.login = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+exports.logout = async (req, res) => {
+  // For JWT, logout is typically handled client-side by deleting the token.
+  // Optionally, you could implement token blacklisting here.
+  res.status(200).json({ status: 'success', message: 'Logged out successfully' });
+}
 // exports.login = async (req, res, next) => {
 //   try {
 //     const { mobileNumber, password, fcmToken } = req.body;
